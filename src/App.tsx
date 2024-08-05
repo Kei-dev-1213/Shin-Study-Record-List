@@ -58,7 +58,7 @@ const App: FC = memo(() => {
 
   return (
     <>
-      <UI.Heading>学習記録一覧</UI.Heading>
+      <UI.Heading style={{textAlign:"center"}} pt={10}>シン・学習記録一覧</UI.Heading>
       <Form
         titleText={titleText}
         timeText={timeText}
