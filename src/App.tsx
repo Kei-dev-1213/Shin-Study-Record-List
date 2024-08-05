@@ -32,7 +32,7 @@ const App: FC = memo(() => {
     setIsLoading(true);
     // チェック
     if (!titleText.trim() || !timeText.trim()) {
-      setError("入力されていない項目があります");
+      setError("入力されていない項目があります。");
       setIsLoading(false);
       return;
     }
