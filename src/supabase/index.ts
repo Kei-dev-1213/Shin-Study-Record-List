@@ -13,8 +13,20 @@ const fetchAllRecords = async () => {
 };
 
 // 登録
-const insertRecord = async ({ title, time }: Omit<Record, "id">) => {
+const insertRecord = async ({
+  title,
+  time,
+}: Omit<Record, "id" | "created_at">) => {
   const { error } = await supabase.from("study-record").insert({ title, time });
+  return error;
+};
+
+// 更新
+const updateRecord = async ({ id, title, time }: Record) => {
+  const { error } = await supabase
+    .from("study-record")
+    .update({ title, time })
+    .eq("id", id);
   return error;
 };
 
@@ -27,5 +39,6 @@ const deleteRecord = async (id: string) => {
 export const DB = {
   fetchAllRecords,
   insertRecord,
+  updateRecord,
   deleteRecord,
 };
