@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { FC, memo, useCallback, useEffect, useState } from "react";
 import { DB } from "./supabase";
 import * as UI from "@chakra-ui/react";
 import { Record } from "./domain/record";
@@ -89,10 +83,13 @@ const App: FC = memo(() => {
   // }, []);
 
   // モーダル
-  const onOpenModal = useCallback((isEditMode: boolean) => {
-    setIsEditMode(isEditMode);
-    modal.onOpen();
-  }, [modal]);
+  const onOpenModal = useCallback(
+    (isEditMode: boolean) => {
+      setIsEditMode(isEditMode);
+      modal.onOpen();
+    },
+    [modal]
+  );
 
   return (
     <>
