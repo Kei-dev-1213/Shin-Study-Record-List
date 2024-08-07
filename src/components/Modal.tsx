@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import * as UI from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Inputs } from "../domain/Inputs";
-import { Record } from "../domain/Record";
+import { Record } from "../domain/record";
 import { useMessage } from "../hooks/useMessage";
 
 type Props = {

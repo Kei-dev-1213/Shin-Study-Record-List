@@ -1,7 +1,7 @@
 import { FC, memo, useCallback, useEffect, useState } from "react";
 import { DB } from "./supabase";
 import * as UI from "@chakra-ui/react";
-import { Record } from "./domain/Record";
+import { Record } from "./domain/record";
 import { Modal } from "./components/Modal";
 import { RecordsTable } from "./components/RecordsTable";
 import { DeleteDialog } from "./components/DeleteDialog";

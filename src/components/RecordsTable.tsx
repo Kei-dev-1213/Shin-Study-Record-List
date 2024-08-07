@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Record } from "../domain/Record";
+import { Record } from "../domain/record";
 import * as UI from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Util } from "../util";
