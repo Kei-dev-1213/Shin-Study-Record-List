@@ -76,7 +76,7 @@ export const Modal: FC<Props> = ({
   };
 
   return (
-    <UI.Modal isOpen={isOpen} onClose={onClose}>
+    <UI.Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
       <UI.ModalOverlay />
       <UI.ModalContent>
         <form onSubmit={handleSubmit(onclickAction)}>

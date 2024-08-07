@@ -35,6 +35,7 @@ export const DeleteDialog: FC<Props> = ({
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={onClose}
+      motionPreset="slideInBottom"
     >
       <UI.AlertDialogOverlay>
         <UI.AlertDialogContent>
