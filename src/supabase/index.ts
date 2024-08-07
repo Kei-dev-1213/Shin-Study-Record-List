@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { Record } from "../domain/record";
+import { Record } from "../domain/Record";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -8,16 +8,17 @@ const supabase = createClient(
 
 // 取得
 const fetchAllRecords = async () => {
-  const records = await supabase.from("study-record").select("*");
+  const records = await supabase
+    .from("study-record")
+    .select("*")
+    .order("id", { ascending: false });
   return records;
 };
 
 // 登録
-const insertRecord = async ({
-  title,
-  time,
-}: Omit<Record, "id" | "created_at">) => {
+const insertRecord = async (title: string, time: string) => {
   const { error } = await supabase.from("study-record").insert({ title, time });
+  console.log(error);
   return error;
 };
 

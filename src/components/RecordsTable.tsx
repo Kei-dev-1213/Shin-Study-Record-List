@@ -1,13 +1,13 @@
 import { FC } from "react";
-import { Record } from "../domain/record";
+import { Record } from "../domain/Record";
 import * as UI from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Util } from "../util";
 
 type Props = {
   records: Array<Record>;
-  onOpenModal: (isEditMode: boolean) => void;
-  onOpenDialog: () => void;
+  onOpenModal: (isEditMode: boolean, selectedId: string) => void;
+  onOpenDialog: (id: string) => void;
 };
 
 export const RecordsTable: FC<Props> = ({
@@ -19,18 +19,15 @@ export const RecordsTable: FC<Props> = ({
     <>
       <UI.TableContainer>
         <UI.Table variant="striped" colorScheme="teal">
-          <UI.TableCaption placement="bottom" fontSize={15}>
-            シン・学習記録一覧
-          </UI.TableCaption>
           <UI.Thead>
             <UI.Tr>
               <UI.Th w="35%" fontSize={15}>
                 学習記録
               </UI.Th>
-              <UI.Th w="15%" fontSize={15}>
+              <UI.Th w="15%" fontSize={15} textAlign="right">
                 学習時間
               </UI.Th>
-              <UI.Th w="30%" fontSize={15}>
+              <UI.Th w="30%" fontSize={15} textAlign="right">
                 更新日時
               </UI.Th>
               <UI.Th w="25%"></UI.Th>
@@ -41,21 +38,23 @@ export const RecordsTable: FC<Props> = ({
               <UI.Tr key={id}>
                 <UI.Td>{title}</UI.Td>
                 <UI.Td isNumeric>{time}</UI.Td>
-                <UI.Td>{Util.formatDateTime(created_at)}</UI.Td>
+                <UI.Td textAlign="right">
+                  {Util.formatDateTime(created_at)}
+                </UI.Td>
                 <UI.Td>
-                  <UI.HStack spacing={20}>
+                  <UI.Flex justifyContent="center" gap="50px">
                     <EditIcon
-                      boxSize={4}
+                      boxSize={5}
                       _hover={{ opacity: 0.7, cursor: "pointer" }}
-                      onClick={onOpenModal.bind(null, true)}
+                      onClick={onOpenModal.bind(null, true, id)}
                     />
                     <DeleteIcon
-                      boxSize={4}
+                      boxSize={5}
                       color="red"
                       _hover={{ opacity: 0.7, cursor: "pointer" }}
-                      onClick={onOpenDialog}
+                      onClick={onOpenDialog.bind(null, id)}
                     />
-                  </UI.HStack>
+                  </UI.Flex>
                 </UI.Td>
               </UI.Tr>
             ))}

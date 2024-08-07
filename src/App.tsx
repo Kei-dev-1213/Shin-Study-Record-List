@@ -1,22 +1,21 @@
 import { FC, memo, useCallback, useEffect, useState } from "react";
 import { DB } from "./supabase";
 import * as UI from "@chakra-ui/react";
-import { Record } from "./domain/record";
+import { Record } from "./domain/Record";
 import { Modal } from "./components/Modal";
 import { RecordsTable } from "./components/RecordsTable";
 import { DeleteDialog } from "./components/DeleteDialog";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 const App: FC = memo(() => {
   // hooks
   const modal = UI.useDisclosure();
   const dialog = UI.useDisclosure();
 
   // state
-  // const [titleText, setTitleText] = useState("");
-  // const [timeText, setTimeText] = useState("");
   const [records, setRecords] = useState<Array<Record>>([]);
-  // const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedRecordId, setSelectedRecordId] = useState("");
 
   // 初期処理
   useEffect(() => {
@@ -32,64 +31,51 @@ const App: FC = memo(() => {
   };
 
   // 登録
-  // const onClickRegist = useCallback(async (e: FormEvent) => {
-  //   e.preventDefault();
-  //   setIsLoading(true);
-  //   // チェック
-  //   if (!titleText.trim() || !timeText.trim()) {
-  //     setError("入力されていない項目があります。");
-  //     setIsLoading(false);
-  //     return;
-  //   }
+  const regist = useCallback(async (title: string, time: string) => {
+    setIsLoading(true);
 
-  //   // 登録
-  //   await DB.insertRecord({ title: titleText, time: timeText });
-  //   await fetchAllRecords();
+    // 登録
+    await DB.insertRecord(title, time);
+    await fetchAllRecords();
 
-  //   // 初期化
-  //   setTitleText("");
-  //   setTimeText("");
-  //   setError("");
-  //   setIsLoading(false);
-  // }, []);
+    // 初期化
+    setIsLoading(false);
+  }, []);
 
   // 更新
-  // const onClickUpdate = useCallback(async (record: Record) => {
-  //   setIsLoading(true);
-  //   // チェック
-  //   if (!titleText.trim() || !timeText.trim()) {
-  //     setError("入力されていない項目があります。");
-  //     setIsLoading(false);
-  //     return;
-  //   }
+  const update = useCallback(async (record: Record) => {
+    setIsLoading(true);
 
-  //   // 登録
-  //   await DB.updateRecord(record);
-  //   await fetchAllRecords();
+    // 更新
+    await DB.updateRecord(record);
+    await fetchAllRecords();
 
-  //   // 初期化
-  //   setTitleText("");
-  //   setTimeText("");
-  //   setError("");
-  //   setIsLoading(false);
-  // }, []);
+    // 初期化
+    setIsLoading(false);
+  }, []);
 
   // 削除
-  // const onClickDelete = useCallback(async (id: string) => {
-  //   setIsLoading(true);
-  //   await DB.deleteRecord(id);
-  //   await fetchAllRecords();
-  //   setIsLoading(false);
-  // }, []);
+  const remove = useCallback(async (id: string) => {
+    setIsLoading(true);
+    await DB.deleteRecord(id);
+    await fetchAllRecords();
+    setIsLoading(false);
+  }, []);
 
   // モーダル
   const onOpenModal = useCallback(
-    (isEditMode: boolean) => {
+    (isEditMode: boolean, selectedId?: string) => {
+      isEditMode && setSelectedRecordId(selectedId!);
+
       setIsEditMode(isEditMode);
       modal.onOpen();
     },
     [modal]
   );
+  const onOpenDialog = useCallback((id: string) => {
+    setSelectedRecordId(id);
+    dialog.onOpen();
+  }, []);
 
   return (
     <>
@@ -98,18 +84,20 @@ const App: FC = memo(() => {
       </UI.Heading>
       <UI.Box w="1024px" mx="auto">
         <UI.Box style={{ textAlign: "right" }}>
-          <UI.Button onClick={onOpenModal.bind(null, false)} colorScheme="teal">
+          <UI.Button onClick={() => onOpenModal(false)} colorScheme="teal">
             新規登録
           </UI.Button>
         </UI.Box>
 
         {isLoading ? (
-          <span>Loading...</span>
+          <UI.Center my={20}>
+            <LoadingSpinner />
+          </UI.Center>
         ) : (
           <RecordsTable
             records={records}
             onOpenModal={onOpenModal}
-            onOpenDialog={dialog.onOpen}
+            onOpenDialog={onOpenDialog}
           />
         )}
       </UI.Box>
@@ -118,8 +106,18 @@ const App: FC = memo(() => {
         isOpen={modal.isOpen}
         onClose={modal.onClose}
         isEditMode={isEditMode}
+        regist={regist}
+        update={update}
+        selectedRecord={
+          records.find((record) => selectedRecordId === record.id)!
+        }
       />
-      <DeleteDialog isOpen={dialog.isOpen} onClose={dialog.onClose} />
+      <DeleteDialog
+        isOpen={dialog.isOpen}
+        selectedRecordId={selectedRecordId}
+        remove={remove}
+        onClose={dialog.onClose}
+      />
     </>
   );
 });
