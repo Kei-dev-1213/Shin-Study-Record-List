@@ -65,7 +65,7 @@ export const RecordsTable: FC<Props> = ({
               <UI.Th fontSize={15} isNumeric>
                 {records.reduce((accu, { time }) => accu + parseInt(time), 0)}
               </UI.Th>
-              <UI.Th fontSize={15}>-</UI.Th>
+              <UI.Th fontSize={15} textAlign="right">-</UI.Th>
               <UI.Th></UI.Th>
             </UI.Tr>
           </UI.Tfoot>
