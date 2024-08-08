@@ -36,7 +36,6 @@ const App: FC = memo(() => {
   // 登録、更新、削除共通処理
   const commonRecordHandler = async (action: () => Promise<void>) => {
     setIsLoading(true);
-    // 更新
     await action();
     await fetchAllRecords();
     setIsLoading(false);
@@ -74,7 +73,6 @@ const App: FC = memo(() => {
   const onOpenModal = useCallback(
     (isEditMode: boolean, selectedId?: string) => {
       isEditMode && setSelectedRecordId(selectedId!);
-
       setIsEditMode(isEditMode);
       modal.onOpen();
     },
@@ -87,11 +85,11 @@ const App: FC = memo(() => {
 
   return (
     <>
-      <UI.Heading style={{ textAlign: "center" }} pt={10}>
+      <UI.Heading textAlign="center" pt={10}>
         シン・学習記録一覧
       </UI.Heading>
       <UI.Box w="1024px" mx="auto">
-        <UI.Box style={{ textAlign: "right" }}>
+        <UI.Box textAlign="right">
           <UI.Button onClick={() => onOpenModal(false)} colorScheme="teal">
             新規登録
           </UI.Button>
@@ -102,11 +100,7 @@ const App: FC = memo(() => {
             <LoadingSpinner />
           </UI.Center>
         ) : (
-          <RecordsTable
-            records={records}
-            onOpenModal={onOpenModal}
-            onOpenDialog={onOpenDialog}
-          />
+          <RecordsTable records={records} onOpenModal={onOpenModal} onOpenDialog={onOpenDialog} />
         )}
       </UI.Box>
 
@@ -116,9 +110,7 @@ const App: FC = memo(() => {
         isEditMode={isEditMode}
         onClickRegist={onClickRegist}
         onClickUpdate={onClickUpdate}
-        selectedRecord={
-          records.find((record) => selectedRecordId === record.id)!
-        }
+        selectedRecord={records.find((record) => selectedRecordId === record.id)!}
       />
       <DeleteDialog
         isOpen={dialog.isOpen}

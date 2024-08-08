@@ -10,11 +10,7 @@ type Props = {
   onOpenDialog: (id: string) => void;
 };
 
-export const RecordsTable: FC<Props> = ({
-  records,
-  onOpenModal,
-  onOpenDialog,
-}) => {
+export const RecordsTable: FC<Props> = ({ records, onOpenModal, onOpenDialog }) => {
   return (
     <>
       <UI.TableContainer>
@@ -37,10 +33,8 @@ export const RecordsTable: FC<Props> = ({
             {records.map(({ id, title, time, created_at }) => (
               <UI.Tr key={id}>
                 <UI.Td>{title}</UI.Td>
-                <UI.Td isNumeric>{time}</UI.Td>
-                <UI.Td textAlign="right">
-                  {Util.formatDateTime(created_at)}
-                </UI.Td>
+                <UI.Td textAlign="right">{time}時間</UI.Td>
+                <UI.Td textAlign="right">{Util.formatDateTime(created_at)}</UI.Td>
                 <UI.Td>
                   <UI.Flex justifyContent="center" gap="50px">
                     <EditIcon
@@ -62,10 +56,13 @@ export const RecordsTable: FC<Props> = ({
           <UI.Tfoot>
             <UI.Tr>
               <UI.Th fontSize={15}>合計時間</UI.Th>
-              <UI.Th fontSize={15} isNumeric>
+              <UI.Th fontSize={15} textAlign="right">
                 {records.reduce((accu, { time }) => accu + parseInt(time), 0)}
+                時間
               </UI.Th>
-              <UI.Th fontSize={15} textAlign="right">-</UI.Th>
+              <UI.Th fontSize={15} textAlign="right">
+                -
+              </UI.Th>
               <UI.Th></UI.Th>
             </UI.Tr>
           </UI.Tfoot>

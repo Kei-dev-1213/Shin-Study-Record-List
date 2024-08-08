@@ -6,9 +6,9 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { DB } from "../supabase";
 
-// const initialRecords = [];
+const initialRecords = [{}];
 
-// createClient関数をモック
+// モック化
 jest.mock("../supabase", () => ({
   DB: {
     fetchAllRecords: jest.fn(),
@@ -49,7 +49,7 @@ describe("初期表示のテスト", () => {
 
   test("学習記録一覧が画面上に表示されていること", async () => {
     // 準備
-    (DB.fetchAllRecords as jest.Mock).mockResolvedValue([]);
+    (DB.fetchAllRecords as jest.Mock).mockResolvedValue(initialRecords);
     render(<App />);
 
     // 検証
