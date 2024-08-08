@@ -3,14 +3,13 @@ import * as UI from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Inputs } from "../domain/Inputs";
 import { Record } from "../domain/record";
-import { useMessage } from "../hooks/useMessage";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   isEditMode: boolean;
-  regist: (title: string, time: string) => Promise<void>;
-  update: (record: Record) => Promise<void>;
+  onClickRegist: (title: string, time: string) => Promise<void>;
+  onClickUpdate: (record: Record) => Promise<void>;
   selectedRecord: Record;
 };
 
@@ -18,8 +17,8 @@ export const Modal: FC<Props> = ({
   isOpen,
   onClose,
   isEditMode,
-  regist,
-  update,
+  onClickRegist,
+  onClickUpdate,
   selectedRecord,
 }) => {
   const {
@@ -28,9 +27,6 @@ export const Modal: FC<Props> = ({
     formState: { errors },
     reset,
   } = useForm<Inputs>();
-
-  // hooks
-  const { displayMessage } = useMessage();
 
   // 初期処理
   useEffect(() => {
@@ -52,6 +48,8 @@ export const Modal: FC<Props> = ({
   // 実行
   const onclickAction: SubmitHandler<Inputs> = async ({ title, time }) => {
     if (title && time) {
+      onClose();
+      // 編集
       if (isEditMode) {
         const newRecord = {
           id: selectedRecord.id,
@@ -59,19 +57,12 @@ export const Modal: FC<Props> = ({
           time,
           created_at: selectedRecord.created_at,
         };
-        update(newRecord);
-        displayMessage({
-          title: "学習記録を更新しました。",
-          status: "info",
-        });
-      } else {
-        regist(title, time);
-        displayMessage({
-          title: "学習記録を登録しました。",
-          status: "success",
-        });
+        await onClickUpdate(newRecord);
       }
-      onClose();
+      // 登録
+      else {
+        await onClickRegist(title, time);
+      }
     }
   };
 

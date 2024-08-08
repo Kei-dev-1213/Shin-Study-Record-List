@@ -11,30 +11,26 @@ const fetchAllRecords = async () => {
   const records = await supabase
     .from("study-record")
     .select("*")
-    .order("id", { ascending: false });
+    .order("created_at", { ascending: true });
   return records;
 };
 
 // 登録
 const insertRecord = async (title: string, time: string) => {
-  const { error } = await supabase.from("study-record").insert({ title, time });
-  console.log(error);
-  return error;
+  await supabase.from("study-record").insert({ title, time });
 };
 
 // 更新
 const updateRecord = async ({ id, title, time }: Record) => {
-  const { error } = await supabase
+  await supabase
     .from("study-record")
-    .update({ title, time })
+    .update({ title, time, created_at: new Date() })
     .eq("id", id);
-  return error;
 };
 
 // 削除
 const deleteRecord = async (id: string) => {
-  const response = await supabase.from("study-record").delete().eq("id", id);
-  return response;
+  await supabase.from("study-record").delete().eq("id", id);
 };
 
 export const DB = {

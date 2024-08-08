@@ -6,10 +6,13 @@ import { Modal } from "./components/Modal";
 import { RecordsTable } from "./components/RecordsTable";
 import { DeleteDialog } from "./components/DeleteDialog";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { useMessage } from "./hooks/useMessage";
+
 const App: FC = memo(() => {
   // hooks
   const modal = UI.useDisclosure();
   const dialog = UI.useDisclosure();
+  const { displayMessage } = useMessage();
 
   // state
   const [records, setRecords] = useState<Array<Record>>([]);
@@ -30,36 +33,41 @@ const App: FC = memo(() => {
     setRecords((await DB.fetchAllRecords()).data ?? []);
   };
 
-  // 登録
-  const regist = useCallback(async (title: string, time: string) => {
+  // 登録、更新、削除共通処理
+  const commonRecordHandler = async (action: () => Promise<void>) => {
     setIsLoading(true);
-
-    // 登録
-    await DB.insertRecord(title, time);
+    // 更新
+    await action();
     await fetchAllRecords();
-
-    // 初期化
     setIsLoading(false);
+  };
+
+  // 登録
+  const onClickRegist = useCallback(async (title: string, time: string) => {
+    await commonRecordHandler(() => DB.insertRecord(title, time));
+    displayMessage({
+      title: "学習記録を登録しました。",
+      status: "success",
+    });
   }, []);
 
   // 更新
-  const update = useCallback(async (record: Record) => {
-    setIsLoading(true);
-
-    // 更新
-    await DB.updateRecord(record);
-    await fetchAllRecords();
-
-    // 初期化
-    setIsLoading(false);
+  const onClickUpdate = useCallback(async (record: Record) => {
+    await commonRecordHandler(() => DB.updateRecord(record));
+    displayMessage({
+      title: "学習記録を更新しました。",
+      status: "info",
+    });
   }, []);
 
   // 削除
-  const remove = useCallback(async (id: string) => {
-    setIsLoading(true);
-    await DB.deleteRecord(id);
-    await fetchAllRecords();
-    setIsLoading(false);
+  const onClickDelete = useCallback(async (id: string) => {
+    dialog.onClose();
+    await commonRecordHandler(() => DB.deleteRecord(id));
+    displayMessage({
+      title: "学習記録を削除しました。",
+      status: "error",
+    });
   }, []);
 
   // モーダル
@@ -106,8 +114,8 @@ const App: FC = memo(() => {
         isOpen={modal.isOpen}
         onClose={modal.onClose}
         isEditMode={isEditMode}
-        regist={regist}
-        update={update}
+        onClickRegist={onClickRegist}
+        onClickUpdate={onClickUpdate}
         selectedRecord={
           records.find((record) => selectedRecordId === record.id)!
         }
@@ -115,7 +123,7 @@ const App: FC = memo(() => {
       <DeleteDialog
         isOpen={dialog.isOpen}
         selectedRecordId={selectedRecordId}
-        remove={remove}
+        onClickDelete={onClickDelete}
         onClose={dialog.onClose}
       />
     </>
