@@ -56,7 +56,7 @@ export const RecordsTable: FC<Props> = ({ records, onOpenModal, onOpenDialog }) 
           <UI.Tfoot>
             <UI.Tr>
               <UI.Th fontSize={15}>合計時間</UI.Th>
-              <UI.Th fontSize={15} textAlign="right">
+              <UI.Th fontSize={15} textAlign="right" data-testid="sum-time">
                 {records.reduce((accu, { time }) => accu + parseInt(time), 0)}
                 時間
               </UI.Th>

@@ -13,14 +13,7 @@ type Props = {
   selectedRecord: Record;
 };
 
-export const Modal: FC<Props> = ({
-  isOpen,
-  onClose,
-  isEditMode,
-  onClickRegist,
-  onClickUpdate,
-  selectedRecord,
-}) => {
+export const Modal: FC<Props> = ({ isOpen, onClose, isEditMode, onClickRegist, onClickUpdate, selectedRecord }) => {
   const {
     register,
     handleSubmit,
@@ -71,9 +64,7 @@ export const Modal: FC<Props> = ({
       <UI.ModalOverlay />
       <UI.ModalContent>
         <form onSubmit={handleSubmit(onclickAction)}>
-          <UI.ModalHeader>
-            {isEditMode ? "記録編集" : "新規登録"}
-          </UI.ModalHeader>
+          <UI.ModalHeader data-testid="modal-title">{isEditMode ? "記録編集" : "新規登録"}</UI.ModalHeader>
           <UI.ModalCloseButton />
           <UI.ModalBody pb={6}>
             <UI.FormControl>
@@ -82,9 +73,7 @@ export const Modal: FC<Props> = ({
                 placeholder="学習記録を入力してください"
                 {...register("title", { required: "内容の入力は必須です" })}
               />
-              {errors.title && (
-                <UI.Box color="red">{errors.title.message}</UI.Box>
-              )}
+              {errors.title && <UI.Box color="red">{errors.title.message}</UI.Box>}
             </UI.FormControl>
 
             <UI.FormControl mt={4}>
@@ -102,9 +91,7 @@ export const Modal: FC<Props> = ({
                   },
                 })}
               />
-              {errors.time && (
-                <UI.Box color="red">{errors.time.message}</UI.Box>
-              )}
+              {errors.time && <UI.Box color="red">{errors.time.message}</UI.Box>}
             </UI.FormControl>
           </UI.ModalBody>
 
