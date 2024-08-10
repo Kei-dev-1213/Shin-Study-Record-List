@@ -38,11 +38,13 @@ export const RecordsTable: FC<Props> = ({ records, onOpenModal, onOpenDialog }) 
                 <UI.Td>
                   <UI.Flex justifyContent="center" gap="50px">
                     <EditIcon
+                      role="edit"
                       boxSize={5}
                       _hover={{ opacity: 0.7, cursor: "pointer" }}
                       onClick={onOpenModal.bind(null, true, id)}
                     />
                     <DeleteIcon
+                      role="delete"
                       boxSize={5}
                       color="red"
                       _hover={{ opacity: 0.7, cursor: "pointer" }}

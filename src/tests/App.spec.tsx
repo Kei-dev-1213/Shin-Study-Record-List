@@ -35,11 +35,19 @@ const registRecord = {
   created_at: "2024-01-04T00:00:00.000000",
 };
 
+const updateRecord = {
+  id: "4",
+  title: "変更の勉強",
+  time: "5",
+  created_at: "2024-01-05T00:00:00.000000",
+};
+
 // モック化
 jest.mock("../supabase", () => ({
   DB: {
     fetchAllRecords: jest.fn(),
     insertRecord: jest.fn(),
+    updateRecord: jest.fn(),
     deleteRecord: jest.fn(),
   },
 }));
@@ -129,8 +137,8 @@ describe("学習記録登録のテスト", () => {
     // 検証
     const modalTitle = screen.getByTestId("modal-title").innerHTML;
     const registModalButton = screen.getByRole("button", { name: "登録" });
-    const titleInput = screen.getByPlaceholderText("学習記録", { exact: false });
-    const timeInput = screen.getByPlaceholderText("学習時間", { exact: false });
+    const titleInput = screen.getByTestId("input-title");
+    const timeInput = screen.getByTestId("input-time");
     expect(modalTitle).toEqual("新規登録");
     expect(registModalButton).toBeInTheDocument();
     expect(titleInput).toHaveValue("");
@@ -161,8 +169,8 @@ describe("学習記録登録のテスト", () => {
     fireEvent.click(registButton);
     // 値の入力
     const registModalButton = screen.getByRole("button", { name: "登録" });
-    const titleInput = screen.getByPlaceholderText("学習記録", { exact: false });
-    const timeInput = screen.getByPlaceholderText("学習時間", { exact: false });
+    const titleInput = screen.getByTestId("input-title");
+    const timeInput = screen.getByTestId("input-time");
     await userEvent.type(titleInput, "新規登録テスト");
     await userEvent.type(timeInput, "4");
     fireEvent.click(registModalButton);
@@ -217,7 +225,7 @@ describe("学習記録登録のテスト", () => {
     fireEvent.click(registButton);
     // 値の入力
     const registModalButton = screen.getByRole("button", { name: "登録" });
-    const timeInput = screen.getByPlaceholderText("学習時間", { exact: false });
+    const timeInput = screen.getByTestId("input-time");
     await userEvent.type(timeInput, "-1");
     fireEvent.click(registModalButton);
 
@@ -228,51 +236,111 @@ describe("学習記録登録のテスト", () => {
   });
 });
 
-// describe("学習記録削除のテスト", () => {
-//   test("[正常系]削除テスト", async () => {
-//     // 準備
-//     (DB.fetchAllRecords as jest.Mock)
-//       .mockResolvedValueOnce({ data: [...initialRecords, registRecord] })
-//       .mockResolvedValueOnce({ data: initialRecords });
-//     await act(async () => {
-//       render(<App />);
-//     });
+describe("学習記録削除のテスト", () => {
+  test("[正常系]削除テスト", async () => {
+    // 準備
+    (DB.fetchAllRecords as jest.Mock)
+      .mockResolvedValueOnce({ data: [...initialRecords, registRecord] })
+      .mockResolvedValueOnce({ data: initialRecords });
+    await act(async () => {
+      render(<App />);
+    });
 
-//     // 事前検証
-//     await waitFor(() => {
-//       // 削除する記録が画面上に表示されていること
-//       expect(screen.queryByText("追加の勉強")).not.toBeInTheDocument();
-//       expect(screen.queryByText("4時間")).not.toBeInTheDocument();
-//       expect(screen.queryByText("2024/01/04 00:00")).not.toBeInTheDocument();
-//       // 合計時間
-//       expect(screen.getByTestId("sum-time").innerHTML).toEqual("6時間");
-//     });
+    // 事前検証
+    await waitFor(() => {
+      // 削除する記録が画面上に表示されていること
+      expect(screen.getByText("追加の勉強")).toBeInTheDocument();
+      expect(screen.getByText("4時間")).toBeInTheDocument();
+      expect(screen.getByText("2024/01/04 00:00")).toBeInTheDocument();
+      // 合計時間
+      expect(screen.getByTestId("sum-time").innerHTML).toEqual("10時間");
+    });
 
-//     // モーダルを開く
-//     const registButton = screen.getByRole("button", { name: "新規登録" });
-//     fireEvent.click(registButton);
-//     // 値の入力
-//     const registModalButton = screen.getByRole("button", { name: "登録" });
-//     const titleInput = screen.getByPlaceholderText("学習記録", { exact: false });
-//     const timeInput = screen.getByPlaceholderText("学習時間", { exact: false });
-//     await userEvent.type(titleInput, "新規登録テスト");
-//     await userEvent.type(timeInput, "4");
-//     fireEvent.click(registModalButton);
+    // モーダルを開く
+    const deleteButton = screen.getAllByRole("delete")[3];
+    fireEvent.click(deleteButton);
+    // 削除
+    const deleteModalButton = screen.getByRole("button", { name: "削除" });
+    fireEvent.click(deleteModalButton);
 
-//     // 検証
-//     await waitFor(() => {
-//       // 登録対象の記録が画面上に表示されていること
-//       expect(screen.getByText("追加の勉強")).toBeInTheDocument();
-//       expect(screen.getByText("4時間")).toBeInTheDocument();
-//       expect(screen.getByText("2024/01/04 00:00")).toBeInTheDocument();
-//       // 合計時間
-//       expect(screen.getByTestId("sum-time").innerHTML).toEqual("10時間");
-//     });
+    // 検証
+    await waitFor(() => {
+      // 登録対象の記録が画面上に表示されていないこと
+      expect(screen.queryByText("追加の勉強")).not.toBeInTheDocument();
+      expect(screen.queryByText("4時間")).not.toBeInTheDocument();
+      expect(screen.queryByText("2024/01/04 00:00")).not.toBeInTheDocument();
+      // 合計時間
+      expect(screen.getByTestId("sum-time").innerHTML).toEqual("6時間");
+    });
+  });
+});
 
-//     // 再度モーダルを開く
-//     fireEvent.click(registButton);
-//     // 項目に値が入っていないこと
-//     expect(titleInput).toHaveValue("");
-//     expect(timeInput).toHaveValue(null);
-//   });
-// });
+describe("学習記録編集のテスト", () => {
+  test("[正常系]モーダル初期表示テスト", async () => {
+    // 準備
+    (DB.fetchAllRecords as jest.Mock).mockResolvedValueOnce({ data: [...initialRecords, registRecord] });
+    await act(async () => {
+      render(<App />);
+    });
+    // モーダルを開く
+    const editButton = screen.getAllByRole("edit")[3];
+    fireEvent.click(editButton);
+
+    // 検証
+    const modalTitle = screen.getByTestId("modal-title").innerHTML;
+    const editModalButton = screen.getByRole("button", { name: "保存" });
+    const titleInput = screen.getByTestId("input-title");
+    const timeInput = screen.getByTestId("input-time");
+    expect(modalTitle).toEqual("記録編集");
+    expect(editModalButton).toBeInTheDocument();
+    expect(titleInput).toHaveValue("追加の勉強");
+    expect(timeInput).toHaveValue(4);
+  });
+
+  test("[正常系]保存テスト", async () => {
+    // 準備
+    (DB.fetchAllRecords as jest.Mock)
+      .mockResolvedValueOnce({ data: [...initialRecords, registRecord] })
+      .mockResolvedValueOnce({ data: [...initialRecords, updateRecord] });
+    await act(async () => {
+      render(<App />);
+    });
+
+    // 事前検証
+    await waitFor(() => {
+      // 編集前の記録が画面上に表示されていること
+      expect(screen.getByText("追加の勉強")).toBeInTheDocument();
+      expect(screen.getByText("4時間")).toBeInTheDocument();
+      expect(screen.getByText("2024/01/04 00:00")).toBeInTheDocument();
+      // 合計時間
+      expect(screen.getByTestId("sum-time").innerHTML).toEqual("10時間");
+    });
+
+    // モーダルを開く
+    const editButton = screen.getAllByRole("edit")[3];
+    fireEvent.click(editButton);
+    // 値の入力
+    const editModalButton = screen.getByRole("button", { name: "保存" });
+    const titleInput = screen.getByTestId("input-title");
+    const timeInput = screen.getByTestId("input-time");
+    await userEvent.type(titleInput, "変更の勉強");
+    await userEvent.type(timeInput, "5");
+    fireEvent.click(editModalButton);
+
+    // 検証
+    await waitFor(() => {
+      // 変更後の記録が画面上に表示されていること
+      expect(screen.getByText("変更の勉強")).toBeInTheDocument();
+      expect(screen.getByText("5時間")).toBeInTheDocument();
+      expect(screen.getByText("2024/01/05 00:00")).toBeInTheDocument();
+      // 合計時間
+      expect(screen.getByTestId("sum-time").innerHTML).toEqual("11時間");
+    });
+
+    // 再度モーダルを開く
+    fireEvent.click(editButton);
+    // 変更後の記録が項目に入っていること
+    expect(titleInput).toHaveValue("変更の勉強");
+    expect(timeInput).toHaveValue(5);
+  });
+});

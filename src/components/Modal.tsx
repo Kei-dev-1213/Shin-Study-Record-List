@@ -70,6 +70,7 @@ export const Modal: FC<Props> = ({ isOpen, onClose, isEditMode, onClickRegist, o
             <UI.FormControl>
               <UI.FormLabel>学習記録</UI.FormLabel>
               <UI.Input
+                data-testid="input-title"
                 placeholder="学習記録を入力してください"
                 {...register("title", { required: "内容の入力は必須です" })}
               />
@@ -79,6 +80,7 @@ export const Modal: FC<Props> = ({ isOpen, onClose, isEditMode, onClickRegist, o
             <UI.FormControl mt={4}>
               <UI.FormLabel>学習時間</UI.FormLabel>
               <UI.Input
+                data-testid="input-time"
                 type="number"
                 placeholder="学習時間を入力してください"
                 {...register("time", {
